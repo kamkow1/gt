@@ -65,6 +65,9 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 #if GT_PLATFORM == GT_PLATFORM_LINUX_x86_64
     typedef long long gt_GenReg, gt_GenRegSet[23];
@@ -132,6 +135,12 @@ void    gt_destroy   (int id);
 int     gt_getid     (void);
 void *  gt_getarg    (void);
 int     gt_alive     (void);
+
+// Wrappers for nonblocking IO (ayo!??)
+
+int     gt_accept   (int fd, struct sockaddr *sa, socklen_t *sl);
+int     gt_recv     (int fd, void *buf, size_t len, int flags);
+int     gt_send     (int fd, const void *buf, size_t len, int flags);
 
 #endif // GT_ASSEMBLY
 

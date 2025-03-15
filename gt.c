@@ -7,13 +7,12 @@
 #include <stdbool.h>
 #include <stdarg.h>
 #include <unistd.h>
-#include <sys/socket.h>
-#include <sys/epoll.h>
-#include <sys/mman.h>
-#include <netinet/in.h>
-#include <signal.h>
-#include <fcntl.h>
 #include <errno.h>
+#include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/mman.h>
+
 #include "gt.h"
 
 #define GT_LOG_ERR(fmt, ...) printf("[gt] ERROR: " fmt, ##__VA_ARGS__)
@@ -182,5 +181,49 @@ void *  gt_getarg    (void)
 {
     int self = gt_getid();
     return envs[self].arg;
+}
+
+bool gt_is_blocking(void)
+{
+    return errno == EAGAIN || errno == EWOULDBLOCK;
+}
+
+int     gt_accept   (int fd, struct sockaddr *sa, socklen_t *sl)
+{
+    int fd1;
+    while ((fd1 = accept(fd, sa, sl))) {
+        if (fd1 < 0 && gt_is_blocking()) {
+            gt_yield();
+        } else {
+            return fd1;
+        }    
+    }
+    return -1;
+}
+
+int     gt_recv     (int fd, void *buf, size_t len, int flags)
+{
+    int n;
+    while ((n = recv(fd, buf, len, flags))) {
+        if (n < 0 && gt_is_blocking()) {
+            gt_yield();
+        } else {
+            return n;
+        }
+    }
+    return -1;
+}
+
+int     gt_send     (int fd, const void *buf, size_t len, int flags)
+{
+    int n;
+    while ((n = send(fd, buf, len, flags))) {
+        if (n < 0 && gt_is_blocking()) {
+            gt_yield();
+        } else {
+            return n;
+        }
+    }
+    return -1;
 }
 
