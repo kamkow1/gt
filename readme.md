@@ -24,6 +24,24 @@ You can also add a flag to your compiler like so:
 gcc -o program -DGT_PLATFORM=GT_PLATFORM_LINUX_x86_64 program.c ...
 ```
 
+### Configuring
+
+You may want to change the fixed maximum amount of threads or size of threads' stacks.
+This is possible via `GT_MAX_ENVIRONMENTS` and `GT_ENVIRONMENT_STACK` macros.
+
+Again, as with the `GT_PLATFORM` macro, you can define it on your commandline like so:
+
+```console
+gcc -o program \
+    -DGT_PLATFORM=GT_PLATFORM_LINUX_x86_64 \
+    -DGT_MAX_ENVIRONMENTS=10 \
+    -DGT_ENVIRONMENT_STACK=4096 \
+    program.c
+    ...
+```
+
+By default, you're given 1024 threads to work with and 16KiB of stack memory per thread.
+
 ## Example
 
 ```c
