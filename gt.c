@@ -85,7 +85,7 @@ static void gt_alloc_stack(gt_Context *ucp)
     }
 
     int prot = PROT_READ | PROT_WRITE;
-    int flags = MAP_ANONYMOUS | MAP_GROWSDOWN | MAP_PRIVATE;
+    int flags = MAP_ANONYMOUS | MAP_PRIVATE;
     ucp->stack.stackptr = mmap(NULL, GT_ENVIRONMENT_STACK, prot, flags, -1, 0);
     ucp->stack.size = GT_ENVIRONMENT_STACK;
 }
