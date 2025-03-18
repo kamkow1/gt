@@ -141,6 +141,8 @@ int     gt_alive     (void);
 int     gt_accept   (int fd, struct sockaddr *sa, socklen_t *sl);
 int     gt_recv     (int fd, void *buf, size_t len, int flags);
 int     gt_send     (int fd, const void *buf, size_t len, int flags);
+int     gt_read     (int fd, void *buf, size_t count);
+int     gt_write    (int fd, const void *buf, size_t count);
 
 #endif // GT_ASSEMBLY
 

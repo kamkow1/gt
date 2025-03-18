@@ -227,3 +227,29 @@ int     gt_send     (int fd, const void *buf, size_t len, int flags)
     return -1;
 }
 
+int     gt_read     (int fd, void *buf, size_t count)
+{
+    int n;
+    while ((n = read(fd, buf, count))) {
+        if (n < 0 && gt_is_blocking()) {
+            gt_yield();
+        } else {
+            return n;
+        }
+    }
+    return -1;
+}
+
+int     gt_write    (int fd, const void *buf, size_t count)
+{
+    int n;
+    while ((n = write(fd, buf, count))) {
+        if (n < 0 && gt_is_blocking()) {
+            gt_yield();
+        } else {
+            return n;
+        }
+    }
+    return -1;
+}
+

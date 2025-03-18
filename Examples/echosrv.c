@@ -14,6 +14,8 @@
 #define PORT        6969
 #define MAX_BUFFER  1024
 
+#define USE_READ_WRITE
+
 typedef struct {
     int taken, fd;
 } Client;
@@ -46,13 +48,21 @@ void handle_client(void)
     Client *client = (Client *)gt_getarg();
     char buffer[MAX_BUFFER];
     for (;;) {
-        int n = gt_recv(client->fd, buffer, sizeof(buffer)-1, 0);
+        #ifdef USE_READ_WRITE
+            int n = gt_read(client->fd, buffer, sizeof(buffer)-1);
+        #else
+            int n = gt_recv(client->fd, buffer, sizeof(buffer)-1, 0);
+        #endif
 
         if (n > 0) {
             buffer[n] = '\0';
             printf("thread %d:\n%s\n", gt_getid(), buffer);
 
-            gt_send(client->fd, buffer, n, 0);
+            #ifdef USE_READ_WRITE
+                gt_write(client->fd, buffer, n);
+            #else
+                gt_send(client->fd, buffer, n, 0);
+            #endif
         } else {
             goto done;
         }
