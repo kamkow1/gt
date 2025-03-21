@@ -21,9 +21,7 @@ void main1(void)
     gt_create(&count, (void*)5);
     gt_create(&count, (void*)3);
 
-    while (gt_alive() > 1) {
-        gt_yield();
-    }
+    gt_yield();
     gt_exit();
 }
 
