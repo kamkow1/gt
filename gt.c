@@ -46,7 +46,7 @@
 
         sp = (gt_GenReg *) ((uintptr_t) ucp->stack.stackptr + ucp->stack.size);
         sp -= link;
-        sp = (gt_GenReg *) (((uintptr_t) sp & -16L) - 8);
+        sp = (gt_GenReg *) (((uintptr_t) sp & -16L));
 
         ucp->mach_context.gen_regs[GT_REG_RIP] = (uintptr_t) func;
         ucp->mach_context.gen_regs[GT_REG_RBX] = (uintptr_t) &sp[link];
