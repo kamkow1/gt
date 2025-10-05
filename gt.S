@@ -64,5 +64,75 @@
         ret
     .size gt_set_context, . - gt_set_context
 
+#elif GT_PLATFORM == GT_PLATFORM_LINUX_ARM
+    .global gt_context_trampoline
+    .align 2
+    gt_context_trampoline: 
+        /* call func with initial arguments */
+        blx     r5
+
+        /* call exit if link is NULL */
+        cmp     r4, #0
+        bne     no_exit
+
+        mov     r0, #0
+        ldr     r1, =exit
+        blx     r1
+
+        /* set link context */
+    no_exit:
+        mov     r0, r4
+        ldr     r1, =gt_set_context
+        blx     r1
+    .size gt_context_trampoline, . - gt_context_trampoline
+
+    .global gt_get_context
+    .align 2
+    gt_get_context:
+        /* copy registers */
+        str    r0,  [r0, #GT_REG_OFFSET(GT_REG_R0)]
+        str    r1,  [r0, #GT_REG_OFFSET(GT_REG_R1)]
+        str    r2,  [r0, #GT_REG_OFFSET(GT_REG_R2)]
+        str    r3,  [r0, #GT_REG_OFFSET(GT_REG_R3)]
+	str    r4,  [r0, #GT_REG_OFFSET(GT_REG_R4)]
+	str    r5,  [r0, #GT_REG_OFFSET(GT_REG_R5)]
+	str    r6,  [r0, #GT_REG_OFFSET(GT_REG_R6)]
+	str    r7,  [r0, #GT_REG_OFFSET(GT_REG_R7)]
+	str    r8,  [r0, #GT_REG_OFFSET(GT_REG_R8)]
+	str    r9,  [r0, #GT_REG_OFFSET(GT_REG_R9)]
+	str    r10, [r0, #GT_REG_OFFSET(GT_REG_R10)]
+	str    r11, [r0, #GT_REG_OFFSET(GT_REG_R11)]
+	str    sp,  [r0, #GT_REG_OFFSET(GT_REG_SP)]
+	str    lr,  [r0, #GT_REG_OFFSET(GT_REG_LR)]
+
+        /* return 0 */
+        eor   r0, r0
+        mov   pc, lr
+    .size gt_get_context, . - gt_get_context
+
+    .global gt_set_context
+    .align 2
+    gt_set_context:
+        /* set registers */
+        ldr    r0,  [r0, #GT_REG_OFFSET(GT_REG_R0)]
+        ldr    r1,  [r0, #GT_REG_OFFSET(GT_REG_R1)]
+        ldr    r2,  [r0, #GT_REG_OFFSET(GT_REG_R2)]
+        ldr    r3,  [r0, #GT_REG_OFFSET(GT_REG_R3)]
+	ldr    r4,  [r0, #GT_REG_OFFSET(GT_REG_R4)]
+	ldr    r5,  [r0, #GT_REG_OFFSET(GT_REG_R5)]
+	ldr    r6,  [r0, #GT_REG_OFFSET(GT_REG_R6)]
+	ldr    r7,  [r0, #GT_REG_OFFSET(GT_REG_R7)]
+	ldr    r8,  [r0, #GT_REG_OFFSET(GT_REG_R8)]
+	ldr    r9,  [r0, #GT_REG_OFFSET(GT_REG_R9)]
+	ldr    r10, [r0, #GT_REG_OFFSET(GT_REG_R10)]
+	ldr    r11, [r0, #GT_REG_OFFSET(GT_REG_R11)]
+	ldr    sp,  [r0, #GT_REG_OFFSET(GT_REG_SP)]
+	ldr    lr,  [r0, #GT_REG_OFFSET(GT_REG_LR)]
+
+        /* return 0 */
+        eor   r0, r0
+        mov   pc, lr
+    .size gt_set_context, . - gt_set_context
+
 #endif // GT_PLATFORM == GT_PLATFORM_LINUX_x86_64
 

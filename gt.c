@@ -71,6 +71,37 @@
 
         va_end(va);
     }
+#elif GT_PLATFORM == GT_PLATFORM_LINUX_ARM
+
+    void    gt_make_context(gt_Context *ucp, void (*func)(void), int argc, ...)
+    {
+        gt_GenReg *sp;
+        va_list va;
+        int i;
+
+        sp = (gt_GenReg *) ((uintptr_t) ucp->stack.stackptr + ucp->stack.size);
+        sp = (gt_GenReg *) ((uintptr_t) sp & -4L);
+        sp -= (argc > 4 ? argc - 4 : 0);
+
+        ucp->mach_context.gen_regs[GT_REG_R4] = (uintptr_t) ucp->link;
+        ucp->mach_context.gen_regs[GT_REG_R5] = (uintptr_t) func;
+        ucp->mach_context.gen_regs[GT_REG_LR] = (uintptr_t) &gt_context_trampoline;
+        ucp->mach_context.gen_regs[GT_REG_SP] = (uintptr_t) sp;
+
+        va_start(va, argc);
+
+        for (i = 0; i < argc; i++) {
+            switch (i) {
+                case 0: ucp->mach_context.gen_regs[GT_REG_R0] = va_arg(va, gt_GenReg); break;
+                case 1: ucp->mach_context.gen_regs[GT_REG_R1] = va_arg(va, gt_GenReg); break;
+                case 2: ucp->mach_context.gen_regs[GT_REG_R2] = va_arg(va, gt_GenReg); break;
+                case 3: ucp->mach_context.gen_regs[GT_REG_R3] = va_arg(va, gt_GenReg); break;
+                default: sp[i - 4] = va_arg(va, gt_GenReg);                             break;
+            }
+        }
+
+        va_end(va);
+    }
 #endif // GT_PLATFORM == GT_PLATFORM_LINUX_x86_64
 
 static gt_GtEnv envs[GT_MAX_ENVIRONMENTS];
